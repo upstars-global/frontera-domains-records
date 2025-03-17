@@ -1,0 +1,15 @@
+{{ if and (eq .Values.desc.env "production") (.Values.searchConsoleRecords) }}
+apiVersion: externaldns.nginx.org/v1
+kind: DNSEndpoint
+metadata:
+  name: {{.Release.Name}}-search-console-records
+  labels: {{ include "frontera_labels" . | nindent 4 }}
+spec:
+  endpoints:
+    {{- range $key, $value := .Values.searchConsoleRecords }}
+    - dnsName: {{ $key }}
+      recordType: CNAME
+      targets:
+        - {{ $value }}
+    {{ end }}
+{{ end }}

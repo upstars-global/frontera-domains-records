@@ -1,0 +1,12 @@
+frontera:
+  ingressHostNames:
+
+domains: []
+
+backendIp:
+
+txtRecords:
+  mirrors:
+    mirror.rocketplay.com:
+
+searchConsoleRecords:

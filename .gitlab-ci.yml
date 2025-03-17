@@ -1,0 +1,30 @@
+include:
+  - project: common/gitlab-ci-templates
+    file: "/publish/publish-to-argocd-1.0.1.yaml"
+    ref: master
+
+stages:
+  - publish
+
+publish to staging alpa:
+  extends: .publish-to-argocd
+  variables:
+    APPSET_FILENAME: "${CI_PROJECT_NAME}-staging.json"
+    APP_DEPLOY_NAME: "${CI_PROJECT_NAME}-staging"
+    PUBLISH_TO_ENV: "staging"
+    HELM_VALUES_PATH: "./values/staging.yaml"
+    DESTINATION_NAMESPACE: "alpa"
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+
+publish to production alpa:
+  extends: .publish-to-argocd
+  variables:
+    APPSET_FILENAME: "${CI_PROJECT_NAME}-production.json"
+    APP_DEPLOY_NAME: "${CI_PROJECT_NAME}-production"
+    PUBLISH_TO_ENV: "production"
+    HELM_VALUES_PATH: "./values/production.yaml"
+    DESTINATION_NAMESPACE: "alpa"
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  when: manual

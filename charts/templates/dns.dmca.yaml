@@ -1,0 +1,19 @@
+{{ if .Values.domains }}
+apiVersion: externaldns.nginx.org/v1
+kind: DNSEndpoint
+metadata:
+  name: {{.Release.Name}}-dmca-dns
+  labels: {{ include "frontera_labels" . | nindent 4 }}
+spec:
+  endpoints:
+    {{- $values := .Values -}}
+    {{- range .Values.domains }}
+    - dnsName: "{{ (printf "79e09fc899.%s" .) }}"
+      recordType: CNAME
+      providerSpecific:
+        - {name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "true"}
+      targets:
+        - d64c66bbb3.dmca.com
+    {{ end }}
+{{ end }}
+

@@ -1,0 +1,29 @@
+{{- range include "frontera.HostnameList" $ | split "," }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-valencia-%s" $.Release.Name . }}
+  labels:
+    {{- include "ingress.labels" $ | nindent 4 }}
+    ingress-type: "minion"
+  annotations:
+    {{- if $.Values.ingress.cloudflareProxied }}
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    {{- end }}
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/rewrites: {{ printf "serviceName=valencia-frontera-alpa-%s rewrite=/" $.Values.desc.env }}
+spec:
+  ingressClassName: {{ $.Values.ingress.controller.name | quote }}
+  rules:
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /svc/af/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ printf "valencia-frontera-alpa-%s" $.Values.desc.env }}
+                port:
+                  name: http
+---
+{{- end }}

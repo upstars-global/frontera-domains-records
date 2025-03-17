@@ -1,0 +1,21 @@
+desc:
+  env: ''
+  project: wl
+  brand: ""
+
+txtRecords:
+  mirrors:
+
+ingress:
+  cloudflareProxied: true
+  controller:
+    name: "nginx"
+
+backendDomainsPrefix: "api"
+
+frontera:
+  basicAuth:
+    enabled: false
+    realm: "Some value"
+    forDomains:
+    authData:

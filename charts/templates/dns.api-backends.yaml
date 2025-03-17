@@ -1,0 +1,18 @@
+{{ if .Values.domains }}
+apiVersion: externaldns.nginx.org/v1
+kind: DNSEndpoint
+metadata:
+  name: {{.Release.Name}}-ss-backend-dns
+  labels: {{ include "frontera_labels" . | nindent 4 }}
+spec:
+  endpoints:
+    {{- $values := .Values -}}
+    {{- range .Values.domains }}
+    - dnsName: "{{ printf "%s.%s" (default "api" .Values.backendDomainsPrefix) . }}"
+      recordType: A
+      providerSpecific:
+        - {name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "true"}
+      targets:
+        - {{ $values.backendIp }}
+    {{ end }}
+{{ end }}

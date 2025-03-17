@@ -1,0 +1,44 @@
+{{- range include "frontera.HostnameList" $ | split "," }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-basic-%s" $.Release.Name . }}
+  labels:
+    {{- include "ingress.labels" $ | nindent 4 }}
+    ingress-type: "minion"
+  annotations:
+    {{- if $.Values.ingress.cloudflareProxied }}
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    {{- end }}
+    nginx.org/client-max-body-size: "10m"
+    nginx.org/mergeable-ingress-type: "minion"
+    nginx.org/location-snippets: |
+      {{- if $.Values.ingress.cloudflareProxied }}
+      proxy_set_header X-Client-Real-Ip $http_cf_connecting_ip;
+      proxy_set_header User-Ip $http_cf_connecting_ip;
+      proxy_set_header X-Geoip-Country-Code $http_cf_ipcountry;
+        {{- else }}
+      proxy_set_header X-Client-Real-Ip $remote_addr;
+      proxy_set_header User-Ip $remote_addr;
+      proxy_set_header X-Geoip-Country-Code "CA";
+        {{- end }}
+
+      if ($uri ~ /answer.php) {
+        add_header 'content-type' 'text/javascript';
+      }
+
+spec:
+  ingressClassName: {{ $.Values.ingress.controller.name | quote }}
+  rules:
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontera-alpa-{{ $.Values.desc.env }}
+                port:
+                  name: http
+---
+{{- end }}

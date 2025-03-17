@@ -1,0 +1,21 @@
+{{- $values := .Values -}}
+{{- $release := .Release -}}
+
+{{ if $values.txtRecords.mirrors }}
+apiVersion: externaldns.nginx.org/v1
+kind: DNSEndpoint
+metadata:
+  name: {{ $release.Name }}-txt-mirror-records
+spec:
+  endpoints:
+    {{- range $key, $records := $values.txtRecords.mirrors }}
+    - dnsName: {{ $key }}
+      recordType: TXT
+      providerSpecific:
+        - {name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "false"}
+      targets:
+        {{- range $record := $records }}
+        - {{ $record }}
+        {{- end }}
+    {{ end }}
+{{ end }}

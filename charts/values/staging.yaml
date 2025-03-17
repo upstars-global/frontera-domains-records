@@ -1,0 +1,20 @@
+frontera:
+  ingressHostNames:
+
+txtRecords:
+  mirrors:
+    mirror.rocketplay.life:
+
+domains: []
+
+backendIp:
+
+dns:
+  bet-rocketplay:
+    yaml:
+
+
+bettingDnsRecords:
+  enable: false
+  name: ""
+  domains:

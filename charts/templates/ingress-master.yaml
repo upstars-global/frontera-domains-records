@@ -1,0 +1,41 @@
+{{- range include "frontera.HostnameList" $ | split "," }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-master-%s" $.Release.Name . }}
+  labels:
+    {{- include "ingress.labels" $ | nindent 4 }}
+  annotations:
+    {{- if $.Values.ingress.cloudflareProxied }}
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+    {{- end }}
+    nginx.org/mergeable-ingress-type: "master"
+    {{- if and ( $.Values.frontera.basicAuth.enabled ) ( has . $.Values.frontera.basicAuth.forDomains ) }}
+    nginx.org/basic-auth-secret: {{ printf "basic-auth-%s" $.Release.Name }}
+    nginx.org/basic-auth-realm: {{ $.Values.frontera.basicAuth.realm | quote | default "Who are you?" }}
+    {{- end }}
+
+spec:
+  ingressClassName: {{ $.Values.ingress.controller.name | quote }}
+  tls:
+    - hosts:
+        - {{ . }}
+      secretName: {{ printf "%s.tls" . }}
+  rules:
+    - host: {{ . }}
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ . }}
+spec:
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-certs
+  secretName: {{ printf "%s.tls" . }}
+  dnsNames:
+    - {{ . }}
+    - "{{ (printf "www.%s" .) }}"
+---
+{{- end }}
