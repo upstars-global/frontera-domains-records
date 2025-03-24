@@ -11,11 +11,12 @@ spec:
     {{- range $key, $records := $values.txtRecords.mirrors }}
     - dnsName: {{ $key }}
       recordType: TXT
+      recordTTL: 1 # minimal value in CF. Available values are: 1 (auto=300), 30 (for enterprise only), 60, 120, 300, 600,...
       providerSpecific:
         - {name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "false"}
       targets:
         {{- range $record := $records }}
-        - {{ $record }}
+        - {{ printf "%s" $record | quote }}
         {{- end }}
     {{ end }}
 {{ end }}
