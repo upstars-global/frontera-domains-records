@@ -12,9 +12,3 @@ backendIp:
 dns:
   bet-rocketplay:
     yaml:
-
-
-bettingDnsRecords:
-  enable: false
-  name: ""
-  domains:
