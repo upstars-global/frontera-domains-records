@@ -7,11 +7,11 @@ metadata:
 spec:
   endpoints:
     {{- range .Values.domains }}
-    - dnsName: "{{ printf "%s.%s" (default "api" .Values.backendDomainsPrefix) . }}"
+    - dnsName: "{{ printf "%s.%s" (default "api" $.Values.backendDomainsPrefix) . }}"
       recordType: A
       providerSpecific:
         - {name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "true"}
       targets:
-        - {{ .Values.backendIp }}
+        - {{ $.Values.backendIp }}
     {{ end }}
 {{ end }}
