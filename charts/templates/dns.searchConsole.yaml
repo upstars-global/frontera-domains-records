@@ -9,6 +9,8 @@ spec:
     {{- range $key, $value := .Values.searchConsoleRecords }}
     - dnsName: {{ $key }}
       recordType: CNAME
+      providerSpecific:
+        - {name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "false"}
       targets:
         - {{ $value }}
     {{ end }}
