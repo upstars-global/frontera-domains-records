@@ -1,0 +1,15 @@
+{{ if .Values.deutschlandSubdomainIp }}
+apiVersion: externaldns.nginx.org/v1
+kind: DNSEndpoint
+metadata:
+  name: {{.Release.Name}}-deutschland
+  labels: {{ include "frontera_labels" . | nindent 4 }}
+spec:
+  endpoints:
+    - dnsName: "deutschland.rocketplay.com"
+      recordType: A
+      providerSpecific:
+        - {name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "true"}
+      targets:
+        - {{ .Values.deutschlandSubdomainIp }}
+{{ end }}
