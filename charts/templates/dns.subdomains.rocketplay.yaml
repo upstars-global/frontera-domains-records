@@ -1,0 +1,20 @@
+{{- if .Values.rocketplaySubdomains }}
+apiVersion: externaldns.nginx.org/v1
+kind: DNSEndpoint
+metadata:
+  name: {{ .Release.Name }}-rocketplay-subdomains
+  labels: {{ include "frontera_labels" . | nindent 4 }}
+spec:
+  endpoints:
+    {{- range .Values.rocketplaySubdomains }}
+    {{- $zone := .zone }}
+    {{- range .records }}
+    - dnsName: "{{ .name }}.{{ $zone }}"
+      recordType: {{ .recordType }}
+      providerSpecific:
+        - { name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "{{ .proxied }}" }
+      targets:
+        - "{{ .target }}"
+    {{- end }}
+    {{- end }}
+{{- end }}
