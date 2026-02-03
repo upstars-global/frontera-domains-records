@@ -1,0 +1,17 @@
+{{- if eq .Values.desc.env "staging" }}
+apiVersion: externaldns.nginx.org/v1
+kind: DNSEndpoint
+metadata:
+  name: {{ .Release.Name }}-bet-rocketplay-dns
+  labels: {{ include "frontera_labels" . | nindent 4 }}
+spec:
+  endpoints:
+    {{- range .Values.bettingDnsRecords }}
+    - dnsName: "{{ .dnsName }}"
+      recordType: {{ .recordType }}
+      providerSpecific:
+        - { name: "external-dns.alpha.kubernetes.io/cloudflare-proxied", "value": "{{ .proxied }}" }
+      targets:
+        - "{{ .target }}"
+    {{- end }}
+  {{- end }}
