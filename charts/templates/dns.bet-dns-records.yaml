@@ -1,4 +1,4 @@
-{{- if eq .Values.desc.env "staging" }}
+{{- if or (eq .Values.desc.env "staging") (eq .Values.desc.env "production") }}
 apiVersion: externaldns.nginx.org/v1
 kind: DNSEndpoint
 metadata:
