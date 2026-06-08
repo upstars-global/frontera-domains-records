@@ -1,9 +1,5 @@
 {{- if or (eq .Values.desc.env "staging") (eq .Values.desc.env "production") }}
-{{- if eq .Values.desc.env "staging" }}
 apiVersion: externaldns.k8s.io/v1alpha1
-{{- else }}
-apiVersion: externaldns.nginx.org/v1
-{{- end }}
 kind: DNSEndpoint
 metadata:
   name: {{ .Release.Name }}-bet-rocketplay-dns
